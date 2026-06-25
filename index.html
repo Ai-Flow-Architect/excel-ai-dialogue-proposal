@@ -3,359 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Excel × AI 対話ツール Excelを入れて、聞くだけ。｜ご担当者様</title>
+<title>Excel × AI 対話ツール ご提案</title>
 <style>
-  :root {
-    --primary: #15803d;
-    --primary-dark: #14532d;
-    --accent: #84cc16;
-    --accent2: #f59e0b;
-    --warm: #ea580c;
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --border: #e2e8f0;
+  :root{
+    --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb;
+    --green:#16a34a; --greenbg:#f0fdf4; --blue:#2563eb; --bluebg:#eff6ff;
+    --amber:#d97706; --amberbg:#fffbeb;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
-
-  .hero {
-    background: linear-gradient(135deg, #14532d 0%, #15803d 55%, #84cc16 100%);
-    color: #fff;
-    padding: 64px 24px 56px;
-    text-align: center;
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    color:var(--ink); background:#f8fafc; line-height:1.8; -webkit-font-smoothing:antialiased;
   }
-  .hero-tag { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 4px 16px; font-size: 13px; letter-spacing: 1px; margin-bottom: 16px; }
-  .hero h1 { font-size: clamp(22px, 4vw, 38px); font-weight: 800; margin-bottom: 14px; line-height: 1.4; }
-  .hero p { font-size: 15px; opacity: 0.95; max-width: 680px; margin: 0 auto; }
-  .hero-meta { margin-top: 22px; display: inline-flex; gap: 14px; flex-wrap: wrap; justify-content: center; font-size: 13px; opacity: 0.9; }
-  .hero-meta span { background: rgba(0,0,0,0.18); padding: 4px 12px; border-radius: 12px; }
-
-  .section { max-width: 960px; margin: 0 auto; padding: 56px 20px 16px; }
-  .section-title { font-size: 22px; font-weight: 800; color: var(--primary-dark); border-left: 4px solid var(--accent); padding-left: 14px; margin-bottom: 12px; }
-  .section-sub { font-size: 14px; color: var(--muted); margin-bottom: 26px; }
-
-  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 8px; }
-  .summary-card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 22px 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .summary-card .icon { font-size: 26px; margin-bottom: 8px; }
-  .summary-card .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .summary-card .value { font-size: 17px; font-weight: 800; color: var(--text); }
-
-  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  th { background: linear-gradient(90deg, var(--primary-dark), var(--primary)); color: #fff; padding: 13px 14px; text-align: left; font-size: 13px; font-weight: 700; }
-  td { padding: 13px 14px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top; }
-  td.k { font-weight: 800; color: var(--primary-dark); white-space: nowrap; }
-  td.k img { width: 18px; height: 18px; vertical-align: -4px; margin-right: 6px; }
-  tr:last-child td { border-bottom: none; }
-  tr:nth-child(even) td { background: #f8fafc; }
-  .tag { display: inline-block; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 10px; white-space: nowrap; }
-  .tag.g { background: #d1fae5; color: #065f46; }
-  .tag.y { background: #fef3c7; color: #92400e; }
-  .tag.r { background: #fee2e2; color: #991b1b; }
-  .tag.b { background: #dbeafe; color: #1e40af; }
-  .tag.n { background: #ffedd5; color: #9a3412; }
-
-  /* Funnel-style architecture diagram */
-  .arch-wrap { background: linear-gradient(180deg, #fafffa 0%, #f0f9f0 100%); border-radius: 18px; padding: 32px 22px 28px; border: 1px solid var(--border); box-shadow: 0 6px 18px rgba(15,30,84,0.08); }
-  .funnel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .funnel-row { width: 100%; max-width: 760px; border-radius: 14px; padding: 18px 22px 16px; position: relative; transition: transform .2s; }
-  .funnel-row:hover { transform: translateY(-2px); }
-  .funnel-row.l1 { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 2px solid #fb923c; width: 100%; }
-  .funnel-row.l2 { background: linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%); border: 2px solid #84cc16; width: 90%; }
-  .funnel-row.l3 { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #15803d; width: 80%; }
-  .funnel-row.l4 { background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%); border: 2px solid #0891b2; width: 70%; }
-  .funnel-row.l5 { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border: 2px solid #7c3aed; width: 60%; }
-  .funnel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .layer-num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; color: #fff; font-weight: 800; font-size: 14px; flex-shrink: 0; }
-  .funnel-row.l1 .layer-num { background: #fb923c; }
-  .funnel-row.l2 .layer-num { background: #84cc16; }
-  .funnel-row.l3 .layer-num { background: #15803d; }
-  .funnel-row.l4 .layer-num { background: #0891b2; }
-  .funnel-row.l5 .layer-num { background: #7c3aed; }
-  .layer-name { font-size: 15px; font-weight: 800; color: var(--text); }
-  .layer-sub { font-size: 11px; color: var(--muted); margin-left: auto; }
-  .logo-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch; }
-  .logo-chip { background: #fff; border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 8px; min-width: 130px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; }
-  .logo-chip img { width: 22px; height: 22px; }
-  .logo-chip .badge { font-size: 10px; padding: 1px 6px; border-radius: 6px; font-weight: 800; margin-left: auto; }
-  .logo-chip .badge.new { background: #ffedd5; color: #9a3412; }
-  .logo-chip .badge.kept { background: #d1fae5; color: #065f46; }
-  .funnel-arrow { color: #15803d; font-size: 26px; line-height: 1; height: 24px; display: flex; align-items: center; justify-content: center; }
-  .legend { display: flex; gap: 18px; font-size: 12px; margin-top: 18px; flex-wrap: wrap; justify-content: center; }
-  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
-  .legend-dot { width: 14px; height: 14px; border-radius: 3px; }
-  .legend-dot.kept { background: #d1fae5; border: 1px solid #065f46; }
-  .legend-dot.new { background: #ffedd5; border: 1px solid #9a3412; }
-  @media(max-width: 720px) {
-    .funnel-row { width: 100% !important; padding: 14px 12px; }
-    .logo-chip { min-width: 0; padding: 8px 10px; font-size: 11px; }
-    .layer-sub { display: none; }
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px 80px;}
+  header{
+    text-align:center; padding:56px 20px 40px;
+    background:linear-gradient(135deg,#ecfdf5 0%,#eff6ff 100%);
+    border-bottom:1px solid var(--line);
   }
+  header .eyebrow{display:inline-block; font-size:13px; color:var(--green); font-weight:700;
+    background:#fff; border:1px solid #bbf7d0; border-radius:999px; padding:4px 14px; margin-bottom:18px;}
+  header h1{font-size:30px; margin:0 0 10px; letter-spacing:.01em;}
+  header .lead-sub{font-size:18px; color:var(--green); font-weight:700; margin:0 0 18px;}
+  header p{font-size:15px; color:var(--sub); max-width:560px; margin:0 auto;}
+  section{margin-top:48px;}
+  h2{font-size:21px; margin:0 0 6px; display:flex; align-items:center; gap:10px;}
+  h2 .bar{width:5px; height:22px; background:var(--green); border-radius:3px;}
+  .section-sub{color:var(--sub); font-size:14px; margin:0 0 22px;}
 
-  .hearing-block { background: var(--card); border-radius: 14px; padding: 24px; border: 1px solid var(--border); margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .hearing-block h3 { font-size: 16px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-  .hearing-block.must h3 { color: #991b1b; }
-  .hearing-block.should h3 { color: #92400e; }
-  .hearing-block.confirm h3 { color: #1e40af; }
-  .hearing-block ul { list-style: none; padding: 0; }
-  .hearing-block li { padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 14px; display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; }
-  .hearing-block li:last-child { border-bottom: none; }
-  .hearing-block .num { font-weight: 800; color: var(--muted); font-size: 13px; }
-  .hearing-block .why { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
+  /* 3 steps */
+  .steps{display:flex; flex-direction:column; gap:0; align-items:center;}
+  .step{
+    width:100%; max-width:560px; background:#fff; border:2px solid var(--line);
+    border-radius:16px; padding:22px 24px; text-align:center;
+  }
+  .step.s1{border-color:#86efac; background:linear-gradient(135deg,#fff 0%,#f0fdf4 100%);}
+  .step.s2{border-color:#93c5fd; background:linear-gradient(135deg,#fff 0%,#eff6ff 100%);}
+  .step.s3{border-color:#fcd34d; background:linear-gradient(135deg,#fff 0%,#fffbeb 100%);}
+  .step .n{display:inline-flex; width:34px; height:34px; border-radius:50%; color:#fff;
+    align-items:center; justify-content:center; font-weight:800; font-size:16px; margin-bottom:10px;}
+  .step.s1 .n{background:var(--green);} .step.s2 .n{background:var(--blue);} .step.s3 .n{background:var(--amber);}
+  .step .t{font-size:19px; font-weight:800; margin-bottom:4px;}
+  .step .d{font-size:14px; color:var(--sub);}
+  .arrow{font-size:24px; color:#9ca3af; margin:6px 0;}
 
-  .pitfall-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  @media(max-width: 720px) { .pitfall-grid { grid-template-columns: 1fr; } .arch-grid, .arrow-row { grid-template-columns: 1fr; min-width: 0; } }
-  .pitfall { background: var(--card); border-left: 4px solid var(--accent2); border-radius: 8px; padding: 14px 16px; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
-  .pitfall .pf-num { font-weight: 800; color: var(--accent2); margin-right: 6px; }
-  .pitfall .pf-title { font-weight: 700; }
-  .pitfall .pf-fix { color: var(--muted); font-size: 12px; margin-top: 3px; display: block; }
+  /* goals */
+  .goals{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .goal{background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 16px; text-align:center;}
+  .goal .ico{font-size:24px;}
+  .goal .lbl{font-size:12px; color:var(--green); font-weight:700; margin:6px 0 4px;}
+  .goal .val{font-size:14px; font-weight:600;}
 
-  .note { background: linear-gradient(135deg, #ecfdf5, #f0fdf4); border: 1px solid #86efac; border-radius: 14px; padding: 22px 24px; font-size: 14px; }
-  .note strong { color: var(--primary-dark); }
+  /* safety */
+  .safe{background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  .safe .row{padding:18px 22px; border-bottom:1px solid var(--line);}
+  .safe .row:last-child{border-bottom:none;}
+  .safe .q{font-weight:700; color:#b45309; margin-bottom:4px; font-size:15px;}
+  .safe .a{color:var(--ink); font-size:14px;}
+  .safe .a b{color:var(--green);}
 
-  footer { background: var(--text); color: #94a3b8; text-align: center; padding: 30px 20px; font-size: 13px; margin-top: 56px; }
-  footer strong { color: #fff; }
+  /* flow */
+  .flow{background:var(--greenbg); border:1px solid #bbf7d0; border-radius:14px; padding:22px 24px;}
+  .flow p{margin:0; font-size:15px;}
+  .flow .big{font-size:17px; font-weight:800; margin-bottom:8px; color:#15803d;}
+
+  /* closing */
+  .closing{background:#fff; border:1px dashed #cbd5e1; border-radius:14px; padding:22px 24px; font-size:14px; color:var(--sub);}
+  footer{text-align:center; color:#9ca3af; font-size:12px; margin-top:56px;}
+
+  @media(max-width:560px){
+    .goals{grid-template-columns:1fr;}
+    header h1{font-size:24px;}
+  }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="hero-tag">AIフローアーキテクト ご提案資料</div>
-  <h1>Excel × AI 対話ツール<br>Excelを入れて、聞くだけ。</h1>
-  <p>やることはたった3ステップ。御社のExcelをアップして、知りたいことをチャットで聞くだけ。AIが裏で計算してから、根拠つきで答えます。難しい操作は一切ありません。</p>
-  <div class="hero-meta">
-    <span>ご担当者様</span>
-    <span>ビジネス（Excelで構築中の社内データベース × AI連携）</span>
-    <span>ご相談・方針整理フェーズ</span>
-  </div>
-</div>
+<header>
+  <span class="eyebrow">ご相談・方針整理フェーズ</span>
+  <h1>Excel × AI 対話ツール</h1>
+  <div class="lead-sub">Excelを入れて、聞くだけ。</div>
+  <p>御社のExcelをアップして、知りたいことをチャットで聞くだけ。<br>AIが裏で計算してから、根拠つきで答えます。難しい操作は一切ありません。</p>
+</header>
 
-<div class="section">
-  <div class="section-title">本日のゴール</div>
-  <div class="section-sub">「何を作るか」を握り、「絶対に押さえたい設計判断」を 3つに絞ってお返事いただける状態にします。</div>
-  <div class="summary-grid">
-    <div class="summary-card">
-      <div class="icon">🎯</div>
-      <div class="label">ゴール①</div>
-      <div class="value">売上分析の動作条件を確定</div>
-    </div>
-    <div class="summary-card">
-      <div class="icon">📊</div>
-      <div class="label">ゴール②</div>
-      <div class="value">LTV分析の設計合意</div>
-    </div>
-    <div class="summary-card">
-      <div class="icon">🔍</div>
-      <div class="label">ゴール③</div>
-      <div class="value">既存資産で短縮できる範囲の確認</div>
-    </div>
-  </div>
-</div>
+<div class="wrap">
 
-<div class="section">
-  <div class="section-title">全体アーキテクチャ（5層構成）</div>
-  <div class="section-sub">お客様の操作はこの3ステップだけ。難しい設定や専門知識は不要です。</div>
-
-  <div class="arch-wrap">
-    <div class="funnel">
-
-      <div class="funnel-row l1">
-        <div class="funnel-head">
-          <span class="layer-num">1</span>
-          <span class="layer-name">データ収集層</span>
-          <span class="layer-sub">広告 × 売上 × 行動データを一箇所に集める</span>
-        </div>
-        <div class="logo-grid">
-          <div class="logo-chip"><img src="https://cdn.simpleicons.org/googleanalytics/E37400" alt="GA4">GA4 購買データ<span class="badge kept">既存</span></div>
-          <div class="logo-chip"><img src="https://cdn.simpleicons.org/googlesheets/0F9D58" alt="Sheets">スプシ売上<span class="badge kept">既存</span></div>
-          <div class="logo-chip"><img src="https://cdn.simpleicons.org/googleads/4285F4" alt="Google Ads">Google広告<span class="badge new">★新規</span></div>
-          <div class="logo-chip"><img src="https://cdn.simpleicons.org/meta/0866FF" alt="Meta">Meta広告<span class="badge new">★新規</span></div>
-        </div>
+  <section>
+    <h2><span class="bar"></span>使い方は、たった3ステップ</h2>
+    <p class="section-sub">お客様の操作はこれだけ。専門知識も準備も不要です。</p>
+    <div class="steps">
+      <div class="step s1">
+        <div class="n">1</div>
+        <div class="t">入れる</div>
+        <div class="d">御社のExcelをアップロードするだけ（普段のExcelのまま・形式変更不要）</div>
       </div>
-
-      <div class="funnel-arrow">▼</div>
-
-      <div class="funnel-row l2">
-        <div class="funnel-head">
-          <span class="layer-num">2</span>
-          <span class="layer-name">変換・統合層</span>
-          <span class="layer-sub">BigQuery で SQL パイプライン化</span>
-        </div>
-        <div class="logo-grid">
-          <div class="logo-chip"><img src="https://cdn.simpleicons.org/googlebigquery/4285F4" alt="BigQuery">BigQuery 統合<span class="badge kept">既存</span></div>
-          <div class="logo-chip">📐 staging / marts SQL<span class="badge kept">既存</span></div>
-          <div class="logo-chip">🔗 広告 × 購買 結合<span class="badge new">★新規</span></div>
-          <div class="logo-chip">📊 コホート集計<span class="badge new">★新規</span></div>
-        </div>
+      <div class="arrow">▼</div>
+      <div class="step s2">
+        <div class="n">2</div>
+        <div class="t">聞く</div>
+        <div class="d">知りたいことを、普通の言葉でチャットに入力<br>例：「先月の売上トップ5は？」</div>
       </div>
-
-      <div class="funnel-arrow">▼</div>
-
-      <div class="funnel-row l3">
-        <div class="funnel-head">
-          <span class="layer-num">3</span>
-          <span class="layer-name">LTV ロジック層</span>
-          <span class="layer-sub">「広告経由初購入 → 累計購入額」の核心</span>
-        </div>
-        <div class="logo-grid">
-          <div class="logo-chip">🎯 初回タッチ固定<span class="badge new">★新規</span></div>
-          <div class="logo-chip">➕ 累計購入額 SUM<span class="badge new">★新規</span></div>
-          <div class="logo-chip">📅 30/60/90日 切出し<span class="badge new">★新規</span></div>
-          <div class="logo-chip">💰 広告ROI 算出<span class="badge new">★新規</span></div>
-        </div>
+      <div class="arrow">▼</div>
+      <div class="step s3">
+        <div class="n">3</div>
+        <div class="t">返る</div>
+        <div class="d">AIが裏で計算して、根拠つきで回答。必要なところは人が確認してから使えます</div>
       </div>
-
-      <div class="funnel-arrow">▼</div>
-
-      <div class="funnel-row l4">
-        <div class="funnel-head">
-          <span class="layer-num">4</span>
-          <span class="layer-name">AI 分析層</span>
-          <span class="layer-sub">月次で改善ヒントを自動生成</span>
-        </div>
-        <div class="logo-grid">
-          <div class="logo-chip"><img src="https://cdn.simpleicons.org/claude/D97757" alt="Claude">Claude 月次分析<span class="badge kept">既存</span></div>
-          <div class="logo-chip">📝 JSON 出力<span class="badge kept">既存</span></div>
-          <div class="logo-chip">💡 広告ROI 改善ヒント<span class="badge new">★新規</span></div>
-        </div>
-      </div>
-
-      <div class="funnel-arrow">▼</div>
-
-      <div class="funnel-row l5">
-        <div class="funnel-head">
-          <span class="layer-num">5</span>
-          <span class="layer-name">可視化層</span>
-          <span class="layer-sub">河島代表が一目で意思決定できる画面</span>
-        </div>
-        <div class="logo-grid">
-          <div class="logo-chip"><img src="https://cdn.simpleicons.org/looker/4285F4" alt="Looker">Looker Studio<span class="badge kept">既存</span></div>
-          <div class="logo-chip">📈 広告別 LTV<span class="badge new">★新規</span></div>
-          <div class="logo-chip">🔍 コホート推移<span class="badge new">★新規</span></div>
-          <div class="logo-chip">⚖️ CAC vs LTV<span class="badge new">★新規</span></div>
-        </div>
-      </div>
-
     </div>
+  </section>
 
-    <div class="legend">
-      <span class="legend-item"><span class="legend-dot kept"></span>既存資産から流用（同業案件で構築済・工数短縮）</span>
-      <span class="legend-item"><span class="legend-dot new"></span>★ ご担当者様向け 新規開発</span>
+  <section>
+    <h2><span class="bar"></span>本日のゴール</h2>
+    <p class="section-sub">この3つを一緒に決められれば、次の一歩がはっきりします。</p>
+    <div class="goals">
+      <div class="goal"><div class="ico">🎯</div><div class="lbl">ゴール①</div><div class="val">やりたいこと（成功の形）を1文で確定</div></div>
+      <div class="goal"><div class="ico">📊</div><div class="lbl">ゴール②</div><div class="val">Excelの中身と今の手作業を把握</div></div>
+      <div class="goal"><div class="ico">🧩</div><div class="lbl">ゴール③</div><div class="val">まず作る「1機能」を決める</div></div>
     </div>
-  </div>
+  </section>
+
+  <section>
+    <h2><span class="bar"></span>「AIって、間違えない？」へのお答え</h2>
+    <p class="section-sub">よくあるご不安と、こちらの設計で防ぐ方法です。</p>
+    <div class="safe">
+      <div class="row">
+        <div class="q">AIは数字の計算を間違えませんか？</div>
+        <div class="a">AIに数字を“文章として読ませる”と間違えます。本ツールは<b>AIに裏で計算させる設計</b>なので、合計や件数がズレません。</div>
+      </div>
+      <div class="row">
+        <div class="q">それっぽい“嘘”を答えませんか？</div>
+        <div class="a">必ず<b>御社のデータを根拠にしてから</b>答えさせます。データにないことは「分からない」と返す設計で、思いつきの回答を防ぎます。</div>
+      </div>
+      <div class="row">
+        <div class="q">いきなり全部AI任せで大丈夫？</div>
+        <div class="a">大事な判断には<b>人の確認を1ステップ</b>挟みます。AIに任せる範囲と人が見る範囲を分けた“ハイブリッド運用”です。</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="bar"></span>進め方</h2>
+    <div class="flow">
+      <p class="big">まず1機能から小さく始めます。</p>
+      <p>最初から大きく作ると失敗しやすいため、一番効果の出る1機能を先に形にします。<br>使ってみて手応えのあった範囲を、順番に広げていきます。規模が必要になれば、本格的な基盤へも地続きで拡張できます。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="bar"></span>本日のスタンス</h2>
+    <div class="closing">
+      金額はこの場で確定せず、本日伺った内容を踏まえ、相談料を差し引いた正式なお見積りを後日お送りします。<br>
+      まずは「<b>やりたいこと（理想の出力）</b>」を一緒に1文に固めることを、最優先にいたします。
+    </div>
+  </section>
+
+  <footer>
+    Excel × AI 対話ツール ご提案 ／ AIフローアーキテクト
+  </footer>
+
 </div>
-
-<div class="section">
-  <div class="section-title">データソース別 取り込み方針</div>
-  <div class="section-sub">公式ネイティブが使える経路は無料コスト・確実性で優先。Meta広告のみ独自連携が必要です。</div>
-  <table>
-    <thead>
-      <tr><th>データソース</th><th>取り込み方式</th><th>難易度</th><th>論点・既存資産との関係</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="k"><img src="https://cdn.simpleicons.org/googleanalytics/E37400" alt="">GA4 購買データ</td>
-        <td>BigQuery Export（GA4ネイティブ・無料枠あり）</td>
-        <td><span class="tag g">低</span></td>
-        <td>同業案件で構築実績あり。<strong>★過去データの保持状況の確認が当日の論点</strong></td>
-      </tr>
-      <tr>
-        <td class="k"><img src="https://cdn.simpleicons.org/googleads/4285F4" alt="">Google広告</td>
-        <td><img src="https://cdn.simpleicons.org/googlebigquery/4285F4" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"> BQ Data Transfer Service（Google公式・無料）</td>
-        <td><span class="tag g">低</span></td>
-        <td>ネイティブ連携で確実。OAuth 1回で恒久稼働</td>
-      </tr>
-      <tr>
-        <td class="k"><img src="https://cdn.simpleicons.org/meta/0866FF" alt="">Meta広告</td>
-        <td><img src="https://cdn.simpleicons.org/n8n/EA4B71" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"> n8n ワークフロー × Marketing API</td>
-        <td><span class="tag y">中</span></td>
-        <td>ネイティブ非対応のため独自連携が必要。同種n8n連携の構築経験あり</td>
-      </tr>
-      <tr>
-        <td class="k">🛒 カラーミー売上</td>
-        <td><img src="https://cdn.simpleicons.org/googlesheets/0F9D58" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"> スプシ経由 → Google Sheets API → BQ</td>
-        <td><span class="tag g">低</span></td>
-        <td>既存スプシ運用を活かす形。複数タブ・毎日更新に対応</td>
-      </tr>
-      <tr>
-        <td class="k">👤 顧客ID紐付け</td>
-        <td>3パターンから選択（クッキー / user_id送信 / メール突合）</td>
-        <td><span class="tag y">中</span></td>
-        <td><strong>★LTV精度の決定要因。当日握りたい最重要論点の1つ</strong></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="section">
-  <div class="section-title">本日の絶対ヒアリング項目</div>
-  <div class="section-sub">設計を確定するために、当日その場で握りたい項目を 3階層で整理しました。</div>
-
-  <div class="hearing-block must">
-    <h3>🔴 MUST（これを握らないと設計確定できない）</h3>
-    <ul>
-      <li><span class="num">①</span><div><strong>GA4 → BigQuery Export は既に有効化されているか</strong><span class="why">→ OFFなら本日有効化＋過去データの backfill 方針（カラーミーCSV 取り込み等）の選択</span></div></li>
-      <li><span class="num">②</span><div><strong>GA4 の purchase イベントの送信状況・transaction_id の付与</strong><span class="why">→ LTV分析の前提。届いていないと購買データが BigQuery で結合できない</span></div></li>
-      <li><span class="num">③</span><div><strong>utm_campaign の命名規則と既存キャンペーン一覧</strong><span class="why">→ コホート分けの単位を決める。命名揺れがあれば正規化ロジックが必要</span></div></li>
-      <li><span class="num">④</span><div><strong>顧客ID紐付け方針（クッキー単位 / user_id送信実装 / メール突合）</strong><span class="why">→ LTV分析の精度を決定。クッキー単位は最短だが端末変更で精度低下</span></div></li>
-      <li><span class="num">⑤</span><div><strong>コホート定義の合意：「広告経由初購入」の判定軸（初訪問 vs 初購入直前）・direct流入の扱い</strong><span class="why">→ 後で揉めやすい論点。当日書面化したい</span></div></li>
-      <li><span class="num">⑥</span><div><strong>LTV期間定義：30日／60日／90日／1年 のどれを主軸に置くか</strong><span class="why">→ ダッシュボードの設計が変わる</span></div></li>
-      <li><span class="num">⑦</span><div><strong>カラーミー売上の抽出経路（手動CSV / GAS / API）と更新タイミング</strong><span class="why">→ 自動同期の頻度と仕組みが決まる</span></div></li>
-      <li><span class="num">⑧</span><div><strong>スプシのタブ構成・各タブの行数</strong><span class="why">→ 読み取り制限の真因を確定し、BQ集約の集計粒度を決める</span></div></li>
-    </ul>
-  </div>
-
-  <div class="hearing-block should">
-    <h3>🟠 SHOULD（あれば設計精度が大きく上がる）</h3>
-    <ul>
-      <li><span class="num">⑨</span><div><strong>プロモコード／紹介コードの発行有無と紐付けデータの所在</strong><span class="why">→ utm_campaign以外の経由判定軸が増え、LTV精度が上がる</span></div></li>
-      <li><span class="num">⑩</span><div><strong>Google広告アカウント構造（MCC配下か単独か）</strong><span class="why">→ BQ Data Transfer の設定単位が変わる</span></div></li>
-      <li><span class="num">⑪</span><div><strong>Meta広告で利用している機能（Conversion API・CAPI実装の有無）</strong><span class="why">→ iOS14以降のCV計測精度の議論に直結</span></div></li>
-      <li><span class="num">⑫</span><div><strong>既存 Looker Studio レポートのオーナー権限・データソース構成</strong><span class="why">→ 新基盤を並列追加するか差し替えるかが決まる</span></div></li>
-      <li><span class="num">⑬</span><div><strong>「Aグループ」の定義（具体的にどの商品群か）</strong><span class="why">→ 売上分析の確定例として活用</span></div></li>
-    </ul>
-  </div>
-
-  <div class="hearing-block confirm">
-    <h3>🔵 CONFIRM（権限・コスト面の確認事項）</h3>
-    <ul>
-      <li><span class="num">⑭</span><div><strong>GCP（BigQuery）プロジェクトは新規作成か既存利用か・課金口座の所在</strong><span class="why">→ BQ コストはクライアント様負担となります（規模実測後に試算ご提示）</span></div></li>
-      <li><span class="num">⑮</span><div><strong>iOS14 ATT による Meta広告 CV計測の精度低下を許容するか</strong><span class="why">→ GA4／BQ ファーストパーティ計測でカバー可能だが、限界は事前に共有</span></div></li>
-      <li><span class="num">⑯</span><div><strong>顧客ID紐付けで「メール突合パターン」を選ぶ場合の同意取得・個人情報保護法対応</strong><span class="why">→ 会員規約の改定が必要になる可能性あり</span></div></li>
-    </ul>
-  </div>
-</div>
-
-<div class="section">
-  <div class="section-title">既知の落とし穴 12点（同業案件で潰してきた知見）</div>
-  <div class="section-sub">「あとから揉める典型ポイント」を事前共有します。実装時はこれらを全て先回りで対策します。</div>
-  <div class="pitfall-grid">
-    <div class="pitfall"><span class="pf-num">①</span><span class="pf-title">期間集計で率／ユニーク値が壊れる</span><span class="pf-fix">→ 合計同士の割り算（ratio of sums）で計算</span></div>
-    <div class="pitfall"><span class="pf-num">②</span><span class="pf-title">新規ユーザー率が100%超え</span><span class="pf-fix">→ user 単位の指標統一</span></div>
-    <div class="pitfall"><span class="pf-num">③</span><span class="pf-title">エンゲージメント率の異常スコア</span><span class="pf-fix">→ SUM／SUM の計算フィールドに統一</span></div>
-    <div class="pitfall"><span class="pf-num">④</span><span class="pf-title">滞在時間が ≒0 表示</span><span class="pf-fix">→ GA4 拡張計測の設定確認・必要時は追加実装</span></div>
-    <div class="pitfall"><span class="pf-num">⑤</span><span class="pf-title">％と小数の単位混在</span><span class="pf-fix">→ 全レイヤ小数で保持・最後だけ×100</span></div>
-    <div class="pitfall"><span class="pf-num">⑥</span><span class="pf-title">GA4 イベント未送信（page_view は届くがカスタムが届かない）</span><span class="pf-fix">→ BigQuery への着弾を必ず実検証</span></div>
-    <div class="pitfall"><span class="pf-num">⑦</span><span class="pf-title">Meta広告はネイティブ連携なし</span><span class="pf-fix">→ n8n 連携の工数差を見積で明示</span></div>
-    <div class="pitfall"><span class="pf-num">⑧</span><span class="pf-title">GA4→BQ Export は「設定後の日付からのみ」蓄積</span><span class="pf-fix">→ 過去データは別経路で backfill する選択肢を用意</span></div>
-    <div class="pitfall"><span class="pf-num">⑨</span><span class="pf-title">コホート定義の解釈ズレ</span><span class="pf-fix">→ 当日書面化（成功条件と紐付け）</span></div>
-    <div class="pitfall"><span class="pf-num">⑩</span><span class="pf-title">iOS14 以降の Meta 広告計測精度低下</span><span class="pf-fix">→ GA4／BQ のファーストパーティ計測でカバー</span></div>
-    <div class="pitfall"><span class="pf-num">⑪</span><span class="pf-title">クッキー単位 LTV の端末変更による分断</span><span class="pf-fix">→ ログイン時 user_id 送信実装を将来オプションに</span></div>
-    <div class="pitfall"><span class="pf-num">⑫</span><span class="pf-title">メール突合時の個人情報保護法対応</span><span class="pf-fix">→ 会員規約改定・同意取得文の追加</span></div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="note">
-    本日のスタンス：金額はこの場で確定せず、ヒアリング内容を踏まえ、相談料を差し引いた正式なお見積りを後日お送りします。まずは“やりたい出力”の確定を最優先にいたします。
-  </div>
-</div>
-
-<footer>
-  <div><strong>AIフローアーキテクト</strong> ／ ご担当者様 売上分析 × 広告LTV分析 戦略整理ご提案</div>
-  <div style="margin-top:6px;font-size:12px;">Lancers登録名：LPteam ／ ご質問は Lancers メッセージにて</div>
-</footer>
-
 </body>
 </html>
